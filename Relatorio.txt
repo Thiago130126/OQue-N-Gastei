@@ -1,0 +1,15 @@
+Eu comecei fazendo o backend, depois API, e depois o Frontend, mas ao fazer o frontend, estou tendo que voltar ao processo de construir a API.
+As operações de loign, criar conta e ver perfil já estão funcionais na API e pelo front, agora pretendo fazer o logout, e não posso esquecer de fazer as seguintes coisas:
+- Implementar a renovação dos tokens de acesso*
+- não esquecer de configurar o cookie refresh apenas para rota de refresh*
+- Definir o argon2 como hash principal
+
+
+
+no next, é possível configurar páginas para serem exibidas enquanto o front aguarda pela resposta do servidor. ** ver outras formas de implementar isso
+
+
+Depois perguntar para o Manus, se em projetos futuros, maiores e melhores, eu devo sempre usar try em tudo, sempre fazer validações, e sempre deixar meu código
+o mais desacoplado possível.
+
+Nota, rodar o container do redis para usar o projeto.

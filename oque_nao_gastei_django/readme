@@ -1,0 +1,2 @@
+O projeto usa Redis para Cache
+Então, preciso rodar a imagem do redis no docker para rodar o projeto

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Página principal</h1>
+{% if user.is_authenticated %}
+    <div>
+        <img src="data:image/png;base64,{{ grafico_gastos }}">
+        <img src="data:image/png;base64,{{ grafico_entradas }}">
+
+        <h3>Personalizar gráficos: </h3>
+        <form method='post' action="{% url "main:home" %}">
+            <label> Gráfico:
+                <p> </p>
+                <input type="radio" name='tipo' value='saida' checked> Gastos
+                <input type="radio" name='tipo' value='entrada'> Entradas
+            </label>
+            <br>
+            <Label>Visualização:
+                <select name="kind">
+                    <option value="bar">Barras</option>
+                    <option value="pie">Pizza</option>
+                    <option value="area">Área</option>
+                    <option value="barh">Barras Horizontais</option>
+                    <option value="line">Linhas</option>
+                </select>
+            </Label>
+
+            <label>Agrupar por:
+                <select name="moment">
+                    <option value="dias">Dias</option>
+                    <option value="dias_uteis">Dias úteis</option>
+                    <option value="semana">Semanas</option>
+                    <option value="mes">Mês</option>
+                    <option value="bimestre">Bimestre</option>
+                    <option value="trimestre">Trimestre</option>
+                    <option value="semestre">Semestre</option>
+                    <option value="ano">Ano</option>
+                </select>
+            </label>
+            <label>Filtrar por:
+                <input type="text" name='filter'>
+            </label>
+            <label>Últimos:
+                <select name="periodo">
+                    <option value="30">30 Dias</option>
+                    <option value="45">45 Dias</option>
+                    <option value="60">60 Dias</option>
+                    <option value="90">90 Dias</option>
+                    <option value="365">1 Ano</option>
+                    <option value="730">2 Anos</option>
+                </select>
+            </label>
+            <label>Legendas:
+                <input type="text" name='xlabel' placeholder='Legenda Horizontal'>
+                <input type="text" name='ylabel' placeholder='Legenda Vertical'>
+            </label>
+            <label>Usar cor personalizada:
+                <input type="checkbox" name='is_color'>
+                <input type="color" name='color'>
+            </label>
+            {% csrf_token %}
+            <input type="submit" value='Aplicar personalizações'>
+        </form>
+
+        <form action="{% url "extratos:pdf" %}" method='post'>
+            {% csrf_token %}
+            <input type="submit" value="Exportar gráficos em pdf">
+        </form>
+
+        <form method="post" action="{% url "accounts:logout" %}">
+            {% csrf_token %}
+            <input type="submit" value="Sair">
+        </form>
+    </div>
+    <div>
+        <a href="{% url "extratos:upload_csv" %}">Fazer upload de csv</a>
+    </div>
+{% else %}
+    <div>
+        <h1>Bem vindo!!!</h1>
+        <p>Pode <a href="{% url "accounts:login" %}">fazer login</a></p>
+        <p>Ou <a href="{% url "accounts:register_user" %}">criar uma conta</a></p>
+    </div>
+{% endif %}
+{% endblock content %}

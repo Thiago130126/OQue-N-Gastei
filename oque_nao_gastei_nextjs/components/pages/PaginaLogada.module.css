@@ -1,0 +1,74 @@
+.header{
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    background-color: #161515;
+    color: var(--cor-superficie);
+    padding: 2rem;
+}
+
+.logo_area{
+    grid-column: 1;
+    margin-left: 3rem;
+}
+
+.opcoes_usuario{
+    display: grid;
+    grid-column: 2;
+    grid-template-rows: auto auto;
+    justify-content: end;
+    gap: 1.6rem;
+    justify-self: right;
+    margin-right: 5rem;
+}
+
+.saudacoes_header{
+    display: grid;
+    grid-row: 1;
+    margin: 1.7rem;
+    align-items: end;
+}
+
+.botoes_header{
+    display: flex;
+    flex-direction: row;
+    grid-row: 2;
+    gap: 2rem;
+    align-items: center;
+}
+
+.logo{
+    width: 18rem;
+    height: 10.7rem;
+}
+
+.botaoPerfil{
+    background: var(--cor-identidade);
+    color: var(--cor-superficie);
+    padding: 0.6rem 1rem;
+    border-radius: 40px;
+    font-weight: 600;
+    transition: 
+        background-color 160ms ease,
+        transform 160ms ease,
+        box-shadow 160ms ease;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.botaoPerfil:hover{
+    background-color: #514a88;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.28);
+}
+
+.botaoPerfil:focus-visible{
+    outline: 3px solid var(--cor--destaque);
+    outline-offset: 3px;
+}
+
+.modo_customizacao{
+
+}
+
+.tipos_graficos{
+
+}

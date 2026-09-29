@@ -1,0 +1,53 @@
+<html>
+<body>
+    <h1>O que não gastei?</h1>
+    
+    <div>
+        <div>
+            <h2>Seus Gastos</h2>
+            <img src="data:image/png;base64,{{ grafico_gastos }}">
+        </div>
+
+        <div>
+            <h2>Seus Ganhos</h2>
+            <img src="data:image/png;base64,{{ grafico_entradas }}">
+        </div>
+
+        <div>
+            <h2>Resumo:</h2>
+            <p>Total de Saídas: {{ total_saidas }}</p>
+            <p>Total de Entradas: {{ total_entradas }}</p>
+            <p>Saldo resultante: {{ total_resultante }}</p>
+        </div>
+
+        <div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Descrição</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transacao in top_transacoes %}
+                        <tr>
+                            <td>{{ transacao.data }}</td>
+                            <td>{{ transacao.descricao }}</td>
+                            <td>{{ transacao.valor }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div>
+        <p>PDF criado em {{ pdf.data }}</p>
+        {% if pdf.filtro %}
+            <p>Filtro aplicado nos gráficos: {{ pdf.filtro }}</p>
+        {% endif %}
+        <p>Período das transações: {{ pdf.periodo }}</p>
+    </div>
+</body>
+</html>

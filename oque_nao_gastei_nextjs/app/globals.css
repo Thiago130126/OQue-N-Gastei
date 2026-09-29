@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+:root {
+    --cor-fundo: #f3eee5;
+    --cor-superficie: #fffdf8;
+    --cor-tinta: #20202a;
+    --cor-texto-secundario: #454557;
+    --cor-identidade: #403a70;
+    --cor-entrada: #2fbf71;
+    --cor-gasto: #e05252;
+    --cor-destaque: #e9b949;
+    --cor-borda: #d8d0c2;
+}
+
+*{
+    box-sizing: border-box;
+}
+
+body{
+    margin: 0;
+    background-color: var(--cor-fundo);
+    color: var(--cor-tinta);
+}
+
+
+button:hover{
+    cursor: pointer;
+}
+
