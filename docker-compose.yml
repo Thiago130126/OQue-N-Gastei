@@ -1,0 +1,26 @@
+services:
+  redis:
+    image: redis:7.2.4-alpine
+
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: ${NAME_DB}
+      POSTGRES_USER: ${USER_DB}
+      POSTGRES_PASSWORD: ${PASSWORD_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  
+  backend:
+    build: ./oque_nao_gastei_django
+    env_file: .env
+    environment:
+      HOST_DB: db
+    depends_on:
+      - db
+      - redis
+
+
+volumes:
+  postgres_data:
