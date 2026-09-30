@@ -1,55 +1,78 @@
 'use client';
 
 import React, { useState } from 'react';
+import styles from './LoginForm.module.css';
 
-interface LoginFormProps{
+interface LoginFormProps {
     onSuccess: (primeiro_nome: string) => void;
 }
 
-export default function LoginForm({ onSuccess }: LoginFormProps){
-
+export default function LoginForm({ onSuccess }: LoginFormProps) {
     const [senha, setSenha] = useState(''); 
     const [email, setEmail] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        try{
+        setLoading(true);
+        try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/accounts/api/login/`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, senha}),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, senha }),
                 credentials: 'include',
             });
 
-            if (response.ok){
+            if (response.ok) {
                 await fetch(`${process.env.NEXT_PUBLIC_API_URL}/accounts/api/refresh/`, {
                     method: 'POST',
                     credentials: 'include'
-                } ).then(res => console.log('Rota acessada: accounts/api/refresh/ ', res.status))
-
-                const dados = await response.json()
+                });
+                const dados = await response.json();
                 onSuccess(dados.first_name);
-            }else{
+            } else {
                 console.error('Falha no login: ', response.json());
             }
-
-        }catch(error){
+        } catch (error) {
             console.error('Erro na requisição: ', error);
+        } finally {
+            setLoading(false);
         }
-
     };
     
-    return(
-        <div>
-            <form method="post" onSubmit={handleSubmit}>
-                <label htmlFor="email_id">Seu email:</label>
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="exemplo@gmail.com" id="email_id"/>
-                <label htmlFor="senha_id">Sua senha:</label>
-                <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} id="senha_id"/>
-                <input type="submit" value={'Login'}/>
-            </form>
-        </div>
-    )
+    return (
+        <form onSubmit={handleSubmit} className={styles.formContainer}>
+            <h2 className={styles.title}>Acessar Conta</h2>
+            
+            <div className={styles.inputGroup}>
+                <label htmlFor="email_id" className={styles.label}>E-mail</label>
+                <input 
+                    type="email" 
+                    value={email} 
+                    onChange={(e) => setEmail(e.target.value)} 
+                    placeholder="exemplo@gmail.com" 
+                    id="email_id"
+                    required
+                    className={styles.input}
+                />
+            </div>
+
+            <div className={styles.inputGroup}>
+                <label htmlFor="senha_id" className={styles.label}>Senha</label>
+                <input 
+                    type="password" 
+                    value={senha} 
+                    onChange={(e) => setSenha(e.target.value)} 
+                    id="senha_id"
+                    placeholder="••••••••"
+                    required
+                    className={styles.input}
+                />
+            </div>
+
+            <button type="submit" disabled={loading} className={styles.submitBtn}>
+                {loading ? 'Entrando...' : 'Entrar na Plataforma'}
+            </button>
+        </form>
+    );
 }

@@ -1,26 +1,31 @@
 'use client';
-import React, { useState } from "react"
+import React, { useState } from "react";
+import styles from './RegisterForm.module.css';
 
-interface RegisterFormProps{
+interface RegisterFormProps {
     onSuccess: (primeiro_nome: string) => void;
 }
 
-export default function RegisterForm({onSuccess}: RegisterFormProps){
-
+export default function RegisterForm({ onSuccess }: RegisterFormProps) {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [dataNascimento, setDataNascimento] = useState('');
     const [senha, setSenha] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [erro, setErro] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setErro(null);
 
-        if (senha !== confirmPassword){
-            console.error('Senha e Confirmação de senha não coincidem'); // adicionar futuramente, uma indicação mais visual de que está errado
+        if (senha !== confirmPassword) {
+            setErro('As senhas digitadas não coincidem.');
             return;
         }
+
+        setLoading(true);
 
         const dados = {
             email,
@@ -29,9 +34,9 @@ export default function RegisterForm({onSuccess}: RegisterFormProps){
             first_name: firstName,
             last_name: lastName,
             data_nascimento: dataNascimento
-        }
+        };
 
-        try{
+        try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/accounts/api/register/`, {
                 method: 'POST',
                 headers: {
@@ -41,41 +46,127 @@ export default function RegisterForm({onSuccess}: RegisterFormProps){
                 body: JSON.stringify(dados)
             });
 
-            if (response.ok){
+            if (response.ok) {
                 const response_data = await response.json();
-                const first_name = response_data.first_name;
-
-                onSuccess(first_name);
-            }else{
-                const erro = await response.json();
-                console.error(erro);
+                onSuccess(response_data.first_name);
+            } else {
+                const erroData = await response.json();
+                setErro(typeof erroData === 'string' ? erroData : 'Falha ao criar conta. Verifique os dados.');
+                console.error(erroData);
             }
-        }catch(error){
+        } catch (error) {
+            setErro('Erro na conexão com o servidor.');
             console.error('Falha na requisição: ', error);
+        } finally {
+            setLoading(false);
         }
-    }
+    };
 
-    return(
-        <div>
-            <h1>Criar Conta</h1>
-
-            <div>
-                <form method="POST" onSubmit={handleSubmit}>
-                    <label htmlFor="first_name_id">Nome:</label>
-                    <input type="text" name="first_name" placeholder="ex: João" id="first_name_id" value={firstName} onChange={(e) => setFirstName(e.target.value)} required/>
-                    <label htmlFor="last_name_id">Sobrenome:</label>
-                    <input type="text" placeholder="Da silva" name="last_name" id="last_name_id" value={lastName} onChange={(e) => setLastName(e.target.value)} required/>
-                    <label htmlFor="email_id">Email:</label>
-                    <input type="email" required placeholder="email_exemplo@gmail.com" name="email" id="email_id" value={email} onChange={(e) => setEmail(e.target.value)}/>
-                    <label htmlFor="data_nascimento_id">Data de Nascimento:</label>
-                    <input type="date" name="data_nascimento" id="data_nascimento_id" required value={dataNascimento} onChange={(e) => setDataNascimento(e.target.value)}/>
-                    <label htmlFor="password_id">Senha:</label>
-                    <input type="password" name="password" required id="password_id" value={senha} onChange={(e) => setSenha(e.target.value)}/>
-                    <label htmlFor="confirmPassword_id">Confirme sua senha:</label>
-                    <input type="password" name="confirmPassword" id="confirmPassword_id" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}/>
-                    <input type="submit" value={'Criar Conta'}/>
-                </form>
+    return (
+        <form onSubmit={handleSubmit} className={styles.formContainer}>
+            <div className={styles.header}>
+                <h2 className={styles.title}>Criar Nova Conta</h2>
+                <p className={styles.subtitle}>Preencha seus dados para gerenciar seus extratos.</p>
             </div>
-        </div>
-    )
+
+            {erro && (
+                <div className={styles.errorMessage} role="alert">
+                    <span>{erro}</span>
+                </div>
+            )}
+
+            {/* Linha com Nome e Sobrenome lado a lado */}
+            <div className={styles.row}>
+                <div className={styles.inputGroup}>
+                    <label htmlFor="first_name_id" className={styles.label}>Nome</label>
+                    <input 
+                        type="text" 
+                        name="first_name" 
+                        placeholder="João" 
+                        id="first_name_id" 
+                        value={firstName} 
+                        onChange={(e) => setFirstName(e.target.value)} 
+                        required
+                        className={styles.input}
+                    />
+                </div>
+                <div className={styles.inputGroup}>
+                    <label htmlFor="last_name_id" className={styles.label}>Sobrenome</label>
+                    <input 
+                        type="text" 
+                        placeholder="da Silva" 
+                        name="last_name" 
+                        id="last_name_id" 
+                        value={lastName} 
+                        onChange={(e) => setLastName(e.target.value)} 
+                        required
+                        className={styles.input}
+                    />
+                </div>
+            </div>
+
+            {/* Email */}
+            <div className={styles.inputGroup}>
+                <label htmlFor="email_id" className={styles.label}>E-mail</label>
+                <input 
+                    type="email" 
+                    required 
+                    placeholder="exemplo@gmail.com" 
+                    name="email" 
+                    id="email_id" 
+                    value={email} 
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={styles.input}
+                />
+            </div>
+
+            {/* Data de Nascimento */}
+            <div className={styles.inputGroup}>
+                <label htmlFor="data_nascimento_id" className={styles.label}>Data de Nascimento</label>
+                <input 
+                    type="date" 
+                    name="data_nascimento" 
+                    id="data_nascimento_id" 
+                    required 
+                    value={dataNascimento} 
+                    onChange={(e) => setDataNascimento(e.target.value)}
+                    className={styles.input}
+                />
+            </div>
+
+            {/* Linha com Senha e Confirmação */}
+            <div className={styles.row}>
+                <div className={styles.inputGroup}>
+                    <label htmlFor="password_id" className={styles.label}>Senha</label>
+                    <input 
+                        type="password" 
+                        name="password" 
+                        placeholder="••••••••" 
+                        required 
+                        id="password_id" 
+                        value={senha} 
+                        onChange={(e) => setSenha(e.target.value)}
+                        className={styles.input}
+                    />
+                </div>
+                <div className={styles.inputGroup}>
+                    <label htmlFor="confirmPassword_id" className={styles.label}>Confirmar Senha</label>
+                    <input 
+                        type="password" 
+                        name="confirmPassword" 
+                        placeholder="••••••••" 
+                        id="confirmPassword_id" 
+                        required 
+                        value={confirmPassword} 
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className={styles.input}
+                    />
+                </div>
+            </div>
+
+            <button type="submit" disabled={loading} className={styles.submitBtn}>
+                {loading ? 'Criando conta...' : 'Cadastrar'}
+            </button>
+        </form>
+    );
 }

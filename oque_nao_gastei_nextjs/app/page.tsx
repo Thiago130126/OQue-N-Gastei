@@ -70,8 +70,7 @@ export default function HomePage(){
             }
             else{
                 setStatusPagina('deslogado');
-                console.error('Falha ao buscar perfil');
-                console.log('Ao estilizar o site, tenho que adicionar um efeito visual que indique isso.');
+                console.log('Falha ao buscar perfil');
             }
         }
 

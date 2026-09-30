@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { DadosGrafico } from '@/components/types/grafico';
+import styles from './FormQuery.module.css';
+import { FiSearch, FiFilter } from 'react-icons/fi';
 
 interface FormGraficoProps {
     tipo: 'entrada' | 'saida';
@@ -15,21 +17,22 @@ const opcoesMoment = [
     { valor: 'ano', texto: 'Ano' },
 ];
 
-
-
 export default function FormGrafico({ tipo, onResultado }: FormGraficoProps) {
     const [moment, setMoment] = useState('mes');
     const [filtro, setFiltro] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const dados_consulta = {
         filter: filtro.trim() || null,
         moment,
         tipo
-    }
+    };
 
-    const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        try{
+        setLoading(true);
+
+        try {
             const csrf_token_response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/accounts/api/csrf/`, {
                 method: 'GET',
                 credentials: 'include',
@@ -37,9 +40,7 @@ export default function FormGrafico({ tipo, onResultado }: FormGraficoProps) {
             const csrf_data = await csrf_token_response.json();
             const csrf_token = csrf_data.csrf_token;
 
-            let response;
-
-            response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/extratos/api/gerar-graficos/`, {
+            let response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/extratos/api/gerar-graficos/`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -49,14 +50,13 @@ export default function FormGrafico({ tipo, onResultado }: FormGraficoProps) {
                 body: JSON.stringify(dados_consulta),
             });
 
-            if(response.status === 401){
-                const refresh = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/accounts/api/refresh/`,{
+            if (response.status === 401) {
+                const refresh = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/accounts/api/refresh/`, {
                     method: 'POST',
                     credentials: 'include'
                 });
-                console.log('Rota acessada: accounts/api/refresh/; status: ', refresh.status);
 
-                if(refresh.ok){
+                if (refresh.ok) {
                     response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/extratos/api/gerar-graficos/`, {
                         method: 'POST',
                         credentials: 'include',
@@ -71,44 +71,62 @@ export default function FormGrafico({ tipo, onResultado }: FormGraficoProps) {
 
             const dados = await response.json();
 
-            if(!response.ok){
+            if (!response.ok) {
                 console.error('Falha ao tentar filtrar os dados do gráfico: ', dados);
             }
             
-            onResultado(dados.resultado);
-
-        }catch(error){
+            onResultado(dados.resultado || []);
+        } catch (error) {
             console.error('Falha ao tentar customizar os gráficos: ', error);
+        } finally {
+            setLoading(false);
         }
-    }
+    };
 
     return (
-        <form method='POST' onSubmit={handleSubmit}>
-            <input
-                type="text"
-                placeholder="Filtrar por descrição"
-                value={filtro}
-                onChange={(e) => setFiltro(e.target.value)}
-            />
+        <form onSubmit={handleSubmit} className={styles.filterForm}>
+            <div className={styles.topRow}>
+                {/* Campo de Busca por Texto */}
+                <div className={styles.searchWrapper}>
+                    <FiSearch className={styles.searchIcon} size={15} />
+                    <input
+                        type="text"
+                        placeholder="Filtrar descrição (ex: Mercado, Uber...)"
+                        value={filtro}
+                        onChange={(e) => setFiltro(e.target.value)}
+                        className={styles.searchInput}
+                    />
+                </div>
 
-            <fieldset>
-                <legend>Agrupar por:</legend>
+                {/* Botão de Envio */}
+                <button type="submit" disabled={loading} className={styles.applyBtn}>
+                    <FiFilter size={14} />
+                    <span>{loading ? 'Filtrando...' : 'Aplicar'}</span>
+                </button>
+            </div>
 
-                {opcoesMoment.map((opcao) => (
-                    <label key={opcao.valor}>
-                        <input
-                            type="radio"
-                            name="moment"
-                            value={opcao.valor}
-                            checked={moment === opcao.valor}
-                            onChange={(e) => setMoment(e.target.value)}
-                        />
-                        {opcao.texto}
-                    </label>
-                ))}
-            </fieldset>
-
-            <button type="submit">Aplicar filtros</button>
+            {/* Agrupamento em Chips (Substitui os radios clássicos) */}
+            <div className={styles.groupWrapper}>
+                <span className={styles.groupLabel}>Agrupar por:</span>
+                <div className={styles.chipsContainer}>
+                    {opcoesMoment.map((opcao) => (
+                        <label 
+                            key={opcao.valor}
+                            className={`${styles.chip} ${moment === opcao.valor ? styles.chipActive : ''}`}
+                        >
+                            <input
+                                type="radio"
+                                name={`moment-${tipo}`}
+                                value={opcao.valor}
+                                checked={moment === opcao.valor}
+                                onChange={(e) => setMoment(e.target.value)}
+                                className={styles.hiddenRadio}
+                            />
+                            <span>{opcao.texto}</span>
+                        </label>
+                    ))}
+                </div>
+            </div>
         </form>
     );
 }

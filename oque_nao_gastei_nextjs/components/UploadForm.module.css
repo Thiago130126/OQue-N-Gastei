@@ -1,0 +1,81 @@
+/* components/UploadForm.module.css */
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.modalTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.modalDescription {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.dropzone {
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  padding: 2.5rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: block;
+}
+
+.dropzone:hover {
+  border-color: var(--accent-primary);
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.emptyPrompt, .fileSelected {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dropText {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.formatHint, .changeHint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.fileName {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-income);
+}
+
+.submitBtn {
+  background: var(--accent-primary);
+  color: #fff;
+  padding: 0.85rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: background 0.2s ease;
+  box-shadow: var(--shadow-glow);
+}
+
+.submitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.submitBtn:not(:disabled):hover {
+  background: var(--accent-primary-hover);
+}

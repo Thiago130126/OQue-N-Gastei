@@ -1,34 +1,32 @@
 'use client';
-import React from "react";
+import React, { useEffect } from "react";
+import styles from './Modal.module.css';
 
-interface ModalProps{
-    isOpen: boolean;
-    onClose: () => void;
-    children: React.ReactNode;
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
 }
 
-export default function Modal({ isOpen, onClose, children }: ModalProps){
-    if(!isOpen) return null;
+export default function Modal({ isOpen, onClose, children }: ModalProps) {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    if (isOpen) window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
 
-    return (
-        <div style={{
-            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            display: 'flex', justifyContent: 'center', alignItems: 'center',
-            zIndex: 1000
-        }}>
-            <div style={{
-                backgroundColor: 'white', padding: '20px', borderRadius: '8px',
-                position: 'relative', minWidth: '300px'
-            }}>
-                <button 
-                    onClick={onClose} 
-                    style={{ position: 'absolute', top: '10px', right: '10px' }}
-                >
-                    X
-                </button>
-                {children}
-            </div>
-        </div>
-    );
+  if (!isOpen) return null;
+
+  return (
+    <div className={styles.overlay} onClick={onClose}>
+      <div className={styles.content} onClick={(e) => e.stopPropagation()}>
+        <button className={styles.closeButton} onClick={onClose} aria-label="Fechar modal">
+          ✕
+        </button>
+        {children}
+      </div>
+    </div>
+  );
 }

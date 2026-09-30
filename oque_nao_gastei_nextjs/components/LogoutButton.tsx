@@ -1,12 +1,19 @@
 'use client';
 
-interface LogoutButtonPrpos{
+import { useState } from 'react';
+import styles from './LogoutButton.module.css';
+import { FiLogOut } from 'react-icons/fi';
+
+interface LogoutButtonProps {
     onSuccess: () => void;
 }
 
-export default function LogoutButton({onSuccess}: LogoutButtonPrpos){
+export default function LogoutButton({ onSuccess }: LogoutButtonProps) {
+    const [loading, setLoading] = useState(false);
+
     const logout = async () => {
-        try{
+        setLoading(true);
+        try {
             const logout_response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/accounts/api/refresh/logout/`, {
                 method: 'POST',
                 headers: {
@@ -15,20 +22,29 @@ export default function LogoutButton({onSuccess}: LogoutButtonPrpos){
                 credentials: 'include'
             });
 
-            if(logout_response.ok){
+            if (logout_response.ok) {
                 console.log('Logout realizado com sucesso');
                 onSuccess();
-            }else{
-                console.log('Falha ao fazer logout: ', logout_response.json());
+            } else {
+                console.log('Falha ao fazer logout: ', await logout_response.json());
             }
-        }catch(error){
+        } catch (error) {
             console.error('Falha ao fazer logout: ', error);
+        } finally {
+            setLoading(false);
         }
     };
 
-    return(
-        <div>
-            <button onClick={logout}>Sair</button>
-        </div>
-    )
+    return (
+        <button 
+            type="button" 
+            onClick={logout} 
+            disabled={loading}
+            className={styles.logoutBtn}
+            title="Encerrar sessão"
+        >
+            <FiLogOut size={16} className={styles.icon} />
+            <span>{loading ? 'Saindo...' : 'Sair da conta'}</span>
+        </button>
+    );
 }

@@ -1,29 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 :root {
-    --cor-fundo: #f3eee5;
-    --cor-superficie: #fffdf8;
-    --cor-tinta: #20202a;
-    --cor-texto-secundario: #454557;
-    --cor-identidade: #403a70;
-    --cor-entrada: #2fbf71;
-    --cor-gasto: #e05252;
-    --cor-destaque: #e9b949;
-    --cor-borda: #d8d0c2;
+  /* Fundo principal escuro e profundo */
+  --bg-deep: #0b0d11;
+  --bg-surface: #12151c;
+  
+  /* Camadas Glassmorphism */
+  --glass-bg: rgba(22, 27, 38, 0.55);
+  --glass-bg-hover: rgba(30, 36, 51, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-focus: rgba(147, 130, 255, 0.35);
+  
+  /* Textos */
+  --text-primary: #f3f4f6;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  /* Cores de Ação e Financeiras */
+  --accent-primary: #6366f1; /* Indigo suave */
+  --accent-primary-hover: #4f46e5;
+  --color-income: #10b981;  /* Verde esmeralda para entradas */
+  --color-expense: #f43f5e; /* Coral avermelhado para saídas */
+  --color-neutral: #38bdf8; /* Azul claro para saldo */
+  
+  /* Sombras */
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --shadow-glow: 0 0 25px rgba(99, 102, 241, 0.15);
 }
 
-*{
-    box-sizing: border-box;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-body{
-    margin: 0;
-    background-color: var(--cor-fundo);
-    color: var(--cor-tinta);
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--bg-deep);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(at 15% 15%, rgba(99, 102, 241, 0.07) 0px, transparent 50%),
+    radial-gradient(at 85% 85%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+  background-attachment: fixed;
+}
+
+/* Scrollbar estilizada */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-deep);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  outline: none;
 }
 
 
-button:hover{
-    cursor: pointer;
-}
+
+
 
