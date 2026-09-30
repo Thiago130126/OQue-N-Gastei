@@ -12,7 +12,6 @@ interface FormGraficoProps {
 
 const opcoesMoment = [
     { valor: 'dias', texto: 'Dias' },
-    { valor: 'semana', texto: 'Semana' },
     { valor: 'mes', texto: 'Mês' },
     { valor: 'ano', texto: 'Ano' },
 ];

@@ -10,27 +10,27 @@ import SobreProjeto from "@/components/SobreProjeto";
 import PaginaDeslogada from "@/components/pages/PaginaDeslogada";
 import PaginaLogada from "@/components/pages/PaginaLogada";
 import PaginaLoading from "@/components/pages/PaginaLoading";
+import styles from './page.module.css';
 
 type ModalTipo = 'login' | 'cadastro' | 'upload' | 'perfil' | 'sobre' | null;
 
 export default function HomePage(){
     const [modalAtivo, setModalAtivo] = useState<ModalTipo>(null);
-
     const [statusPagina, setStatusPagina] = useState<'loading' | 'logado' | 'deslogado'>('loading');
     const [nome, setNome] = useState('');
 
     const renderConteudoModal = () => {
         switch (modalAtivo) {
             case 'login':
-                return <LoginForm onSuccess={(primeiro_nome) =>{ setModalAtivo(null); setStatusPagina('logado'); setNome(primeiro_nome);}}/>;
+                return <LoginForm onSuccess={(primeiro_nome) => { setModalAtivo(null); setStatusPagina('logado'); setNome(primeiro_nome); }} />;
             case 'cadastro':
-                return <RegisterForm onSuccess={(primeiro_nome) => {setModalAtivo(null); setStatusPagina('logado'); setNome(primeiro_nome);}}/>;
+                return <RegisterForm onSuccess={(primeiro_nome) => { setModalAtivo(null); setStatusPagina('logado'); setNome(primeiro_nome); }} />;
             case 'upload':
-                return <UploadForm onSuccess={() => setModalAtivo(null)}/>;
+                return <UploadForm onSuccess={() => setModalAtivo(null)} />;
             case 'perfil':
-                return <ProfileForm onSuccess={() => setModalAtivo(null)}/>;
+                return <ProfileForm onSuccess={() => setModalAtivo(null)} />;
             case 'sobre':
-                return <SobreProjeto/>;
+                return <SobreProjeto />;
             default:
                 return null;
         }
@@ -41,36 +41,35 @@ export default function HomePage(){
             let perfil_json;
 
             setStatusPagina('loading');
-            perfil_json = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/accounts/api/perfil/`, {
-                method: 'GET',
-                credentials: 'include'
-            });
-
-            if(perfil_json.status === 401){
-
-                const refresh = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/accounts/api/refresh/`, {
-                    method: 'POST',
+            try {
+                perfil_json = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/accounts/api/perfil/`, {
+                    method: 'GET',
                     credentials: 'include'
                 });
-                console.log('Rota acessada: accounts/api/refresh/; status: ', refresh.status);
-                
-                if(refresh.ok){
-                    perfil_json = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/accounts/api/perfil/`, {
-                        method: 'GET',
+
+                if (perfil_json.status === 401) {
+                    const refresh = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/accounts/api/refresh/`, {
+                        method: 'POST',
                         credentials: 'include'
                     });
+                    
+                    if (refresh.ok) {
+                        perfil_json = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/accounts/api/perfil/`, {
+                            method: 'GET',
+                            credentials: 'include'
+                        });
+                    }
                 }
 
-            }
-            if(perfil_json.ok){
-                const perfil = await perfil_json.json();
-
-                setStatusPagina('logado');
-                setNome(perfil.first_name);
-            }
-            else{
+                if (perfil_json && perfil_json.ok) {
+                    const perfil = await perfil_json.json();
+                    setStatusPagina('logado');
+                    setNome(perfil.first_name);
+                } else {
+                    setStatusPagina('deslogado');
+                }
+            } catch (err) {
                 setStatusPagina('deslogado');
-                console.log('Falha ao buscar perfil');
             }
         }
 
@@ -79,25 +78,31 @@ export default function HomePage(){
 
     let pagina: React.ReactNode;
 
-    if (statusPagina === 'deslogado'){
-        pagina = <PaginaDeslogada onAbrirLogin={() => setModalAtivo('login')} onAbrirCadastro={() => setModalAtivo('cadastro')}/>
-    }else if (statusPagina === 'logado'){
-        pagina = <PaginaLogada 
-            nome={nome} 
-            onAbrirPerfil={() => setModalAtivo('perfil')} 
-            onAbrirSobre={() => setModalAtivo('sobre')}
-            onAbrirUpload={() => setModalAtivo('upload')}
-            onLogoutSuccess={() => {setNome(''); setStatusPagina('deslogado')}}
+    if (statusPagina === 'deslogado') {
+        pagina = <PaginaDeslogada onAbrirLogin={() => setModalAtivo('login')} onAbrirCadastro={() => setModalAtivo('cadastro')} />;
+    } else if (statusPagina === 'logado') {
+        pagina = (
+            <PaginaLogada 
+                nome={nome} 
+                onAbrirPerfil={() => setModalAtivo('perfil')} 
+                onAbrirSobre={() => setModalAtivo('sobre')}
+                onAbrirUpload={() => setModalAtivo('upload')}
+                onLogoutSuccess={() => { setNome(''); setStatusPagina('deslogado'); }}
             />
-    }else if (statusPagina === 'loading'){
-        pagina = <PaginaLoading/>
+        );
+    } else if (statusPagina === 'loading') {
+        pagina = <PaginaLoading />;
     }
-    
 
-    return(
-        <div>
+    return (
+        <div className={styles.appContainer}>
+            {/* Efeitos de iluminação de fundo para destacar o vidro */}
+            <div className={styles.glowOrbTopLeft} aria-hidden="true" />
+            <div className={styles.glowOrbBottomRight} aria-hidden="true" />
 
-            {pagina}
+            <div className={`${styles.pageContent} ${modalAtivo ? styles.pageBlurred : ''}`}>
+                {pagina}
+            </div>
 
             {modalAtivo && (
                 <Modal isOpen={true} onClose={() => setModalAtivo(null)}>
@@ -105,5 +110,5 @@ export default function HomePage(){
                 </Modal>
             )}
         </div>
-    )
+    );
 }
