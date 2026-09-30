@@ -1,6 +1,7 @@
 services:
   redis:
     image: redis:7.2.4-alpine
+    restart: always
 
   db:
     image: postgres:16-alpine
@@ -11,15 +12,39 @@ services:
       POSTGRES_PASSWORD: ${PASSWORD_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${USER_DB} -d ${NAME_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   
   backend:
     build: ./oque_nao_gastei_django
+    restart: always
+    container_name: oque_nao_gastei_django
     env_file: .env
+    ports:
+      - "8000:8000"
     environment:
       HOST_DB: db
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+  
+  frontend:
+    build: ./oque_nao_gastei_nextjs
+    env_file: .env.local
+    restart: always
+    container_name: oque_nao_gastei_nextjs
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    depends_on:
+      - backend
 
 
 volumes:
