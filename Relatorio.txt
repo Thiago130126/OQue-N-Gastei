@@ -13,3 +13,32 @@ Depois perguntar para o Manus, se em projetos futuros, maiores e melhores, eu de
 o mais desacoplado possível.
 
 Nota, rodar o container do redis para usar o projeto.
+
+
+
+Comando para copiar os arquivos do django admin para staticfiles/ para o nginx servir eles:
+python manage.py collectstatic --noinput
+
+Comandos do docker:
+docker compose up -d -> para subir o container
+docker compose up -d --build -> para buildar o container antes de subir
+
+para ver logs após subir com -d
+
+docker compose logs -f
+só do backend:
+docker compose logs -f backend -> porque a imagem do backend eu chamei de backend
+só do front:
+docker compose logs -f frontend
+
+ver status:
+docker compose ps
+
+parar os serviços:
+docker compose down
+
+executar migrações:
+docker compose exec backend python manage.py migrate
+
+coleta dos arquivos estáticos:
+docker compose exec backend python manage.py collectstatic --noinput

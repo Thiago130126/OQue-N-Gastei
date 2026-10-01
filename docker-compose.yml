@@ -22,7 +22,7 @@ services:
     build: ./oque_nao_gastei_django
     restart: always
     container_name: oque_nao_gastei_django
-    env_file: .env
+    env_file: ./oque_nao_gastei_django/.env
     ports:
       - "8000:8000"
     environment:
@@ -35,7 +35,7 @@ services:
   
   frontend:
     build: ./oque_nao_gastei_nextjs
-    env_file: .env.local
+    env_file: ./oque_nao_gastei_nextjs/.env.local
     restart: always
     container_name: oque_nao_gastei_nextjs
     ports:

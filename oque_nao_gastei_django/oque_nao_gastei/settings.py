@@ -37,6 +37,9 @@ ALLOWED_HOSTS = lista_config('ALLOWED_HOSTS')
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
+STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 # Application definition
 
 INSTALLED_APPS = [
