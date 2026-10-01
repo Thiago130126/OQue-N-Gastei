@@ -18,6 +18,7 @@ export default function HomePage(){
     const [modalAtivo, setModalAtivo] = useState<ModalTipo>(null);
     const [statusPagina, setStatusPagina] = useState<'loading' | 'logado' | 'deslogado'>('loading');
     const [nome, setNome] = useState('');
+    const [refreshGraficos, setRefreshGraficos] = useState(0);
 
     const renderConteudoModal = () => {
         switch (modalAtivo) {
@@ -26,7 +27,7 @@ export default function HomePage(){
             case 'cadastro':
                 return <RegisterForm onSuccess={(primeiro_nome) => { setModalAtivo(null); setStatusPagina('logado'); setNome(primeiro_nome); }} />;
             case 'upload':
-                return <UploadForm onSuccess={() => setModalAtivo(null)} />;
+                return <UploadForm onSuccess={() => {setModalAtivo(null); setRefreshGraficos((n) => n + 1);}} />;
             case 'perfil':
                 return <ProfileForm onSuccess={() => setModalAtivo(null)} />;
             case 'sobre':
@@ -88,6 +89,7 @@ export default function HomePage(){
                 onAbrirSobre={() => setModalAtivo('sobre')}
                 onAbrirUpload={() => setModalAtivo('upload')}
                 onLogoutSuccess={() => { setNome(''); setStatusPagina('deslogado'); }}
+                refreshKey={refreshGraficos}
             />
         );
     } else if (statusPagina === 'loading') {

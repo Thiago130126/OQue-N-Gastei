@@ -18,9 +18,10 @@ interface PaginaLogadaProps {
     onAbrirSobre: () => void;
     nome: string;
     onLogoutSuccess: () => void;
+    refreshKey?: number;
 }
 
-export default function PaginaLogada({ onAbrirPerfil, onAbrirUpload, onAbrirSobre, nome, onLogoutSuccess }: PaginaLogadaProps) {
+export default function PaginaLogada({ onAbrirPerfil, onAbrirUpload, onAbrirSobre, nome, onLogoutSuccess, refreshKey }: PaginaLogadaProps) {
     const [modoCustomizacao, setModoCustomizacao] = useState(false);
     const [tipoGrafico, setTipoGrafico] = useState<'bar' | 'line' | 'pie' | 'sem_dados'>('bar');
     const [corEntrada, setCorEntrada] = useState('#10b981');
@@ -57,6 +58,8 @@ export default function PaginaLogada({ onAbrirPerfil, onAbrirUpload, onAbrirSobr
 
                     if ((!dados.gastos || dados.gastos.length === 0) && (!dados.entradas || dados.entradas.length === 0)) {
                         setTipoGrafico('sem_dados');
+                    }else if (tipoGrafico === 'sem_dados'){
+                        setTipoGrafico('bar');
                     }
                 } catch (error) {
                     console.error('Falha ao processar dados dos gráficos: ', error);
@@ -67,7 +70,7 @@ export default function PaginaLogada({ onAbrirPerfil, onAbrirUpload, onAbrirSobr
             }
         }
         fetchData();
-    }, []);
+    }, [refreshKey]);
 
     return (
         <div className={styles.layoutWrapper}>
