@@ -24,9 +24,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config(
+    'ALLOWED_HOSTS',
+    default='',
+    cast=lambda value: [host.strip() for host in value.split(',') if host.strip()]
+)
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
@@ -52,7 +56,7 @@ INSTALLED_APPS = [
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:3000', # alterar para a rota em produção
+    config('ALLOWED_HOSTS'),
 ]
 
 
@@ -77,7 +81,7 @@ PASSWORD_HASHERS = [
 
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000', # em produção, alterar para o domínio real
+    config('ALLOWED_HOSTS'),
 ]
 
 REST_FRAMEWORK = {
@@ -127,7 +131,7 @@ DATABASES = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
+        "LOCATION": "redis://redis:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient"
         }
