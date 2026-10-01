@@ -26,11 +26,14 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = config(
-    'ALLOWED_HOSTS',
-    default='',
-    cast=lambda value: [host.strip() for host in value.split(',') if host.strip()]
-)
+def lista_config(nome ):
+    return [
+        valor.strip()
+        for valor in config(nome, default='').split(',')
+        if valor.strip()
+    ]
+
+ALLOWED_HOSTS = lista_config('ALLOWED_HOSTS')
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
@@ -55,9 +58,7 @@ INSTALLED_APPS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = [
-    config('ALLOWED_HOSTS'),
-]
+CSRF_TRUSTED_ORIGINS = lista_config('ORIGINS')
 
 
 MIDDLEWARE = [
@@ -80,9 +81,7 @@ PASSWORD_HASHERS = [
 ]
 
 
-CORS_ALLOWED_ORIGINS = [
-    config('ALLOWED_HOSTS'),
-]
+CORS_ALLOWED_ORIGINS = lista_config('ORIGINS')
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
