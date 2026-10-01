@@ -31,7 +31,7 @@ class CustomUser(AbstractUser):
 
     USERNAME_FIELD = 'email'
 
-    REQUIRED_FIELDS = ['first_name', 'last_name']
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'data_nascimento']
 
     data_nascimento = models.DateField(verbose_name='Data de Nascimento', blank=False, null=False)
 

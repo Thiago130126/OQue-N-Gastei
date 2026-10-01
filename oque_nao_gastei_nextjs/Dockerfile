@@ -13,6 +13,13 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 ENV NEXT_TELEMETRY_DISABLE=1
+
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_ROTA_RAIZ
+
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_ROTA_RAIZ=$NEXT_PUBLIC_ROTA_RAIZ
+
 RUN npm run build
 
 # Run
@@ -24,7 +31,7 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLE=1
 
 RUN addgroup --system --gid 1001 nodejs
-RUN addgroup --system --uid 1001 nextjs
+RUN adduser --system --uid 1001 nextjs
 
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
