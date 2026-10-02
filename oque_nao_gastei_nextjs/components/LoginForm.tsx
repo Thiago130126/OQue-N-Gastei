@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import styles from './LoginForm.module.css';
+import { toast } from 'sonner';
 
 interface LoginFormProps {
     onSuccess: (primeiro_nome: string) => void;
@@ -32,9 +33,11 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
                 onSuccess(dados.first_name);
             } else {
                 console.error('Falha no login: ', response.json());
+                toast.error('Email ou senha incorretos');
             }
         } catch (error) {
             console.error('Erro na requisição: ', error);
+            toast.error('Falha interna ao fazer login');
         } finally {
             setLoading(false);
         }

@@ -1,5 +1,6 @@
 import React from 'react';
 import './globals.css';
+import { Toaster } from 'sonner';
 
 export const metadata = {
   title: 'O Que Não Gastei?',
@@ -15,6 +16,7 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body>
         {children}
+        <Toaster theme='dark' position='top-right' richColors closeButton/>
       </body>
     </html>
   );

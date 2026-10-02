@@ -5,6 +5,7 @@ import { refresh_Token } from "./validators/Refresher";
 import styles from './UploadForm.module.css';
 import { FiUploadCloud } from "react-icons/fi";
 import { LuFileCheck } from "react-icons/lu"
+import { toast } from "sonner";
 
 interface UploadFormProps {
     onSuccess: () => void;
@@ -59,9 +60,11 @@ export default function UploadForm({ onSuccess }: UploadFormProps) {
             } else {
                 const erro = await response.json();
                 console.error('Falha no upload:', erro);
+                toast.error('falha ao processar extrato, formato de csv inválido');
             }
         } catch (error) {
             console.error('Erro na requisição:', error);
+            toast.error('Erro interno ao processar o arquivo');
         } finally {
             setLoading(false);
         }
