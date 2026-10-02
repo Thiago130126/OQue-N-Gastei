@@ -42,3 +42,6 @@ docker compose exec backend python manage.py migrate
 
 coleta dos arquivos estáticos:
 docker compose exec backend python manage.py collectstatic --noinput
+
+Comando para passar todos os arquivos estáticos para um lugar só, para o nginx poder servi-los
+docker compose exec backend python manage.py collectstatic --noinput
