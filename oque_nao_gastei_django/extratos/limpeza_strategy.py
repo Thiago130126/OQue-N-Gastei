@@ -10,11 +10,16 @@ def ler_csv(arquivo, delimiter=',', skiprows=0):
     codes = ["utf-8", "latin-1"]
 
     try:
+        if hasattr(arquivo, 'seek'):
+            arquivo.seek(0)
+
         for code in codes:
             try:
                 csv = pd.read_csv(arquivo, delimiter=delimiter, skiprows=skiprows, encoding=code)
                 break
             except UnicodeDecodeError:
+                if hasattr(arquivo, 'seek'):
+                    arquivo.seek(0)
                 pass
 
         return csv
