@@ -104,8 +104,7 @@ def upload_csv_api(request):
         return Response({'erro': 'Nenhum arquivo enviado'}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
-        df_arquivo = pd.read_csv(request.FILES['arquivo_csv'], sep=';', skiprows=4)
-        frame = Processamento(df_arquivo)
+        frame = ClearManager(request.FILES['arquivo_csv'])
         obj = frame.obter_dataframe()
         list_obj = [
             Transacoes(

@@ -21,6 +21,9 @@ def ler_csv(arquivo, delimiter=',', skiprows=0):
                 if hasattr(arquivo, 'seek'):
                     arquivo.seek(0)
                 pass
+            except Exception:
+                if hasattr(arquivo, 'seek'):
+                    arquivo.seek(0)
 
         return csv
     except Exception:
@@ -55,7 +58,12 @@ def sicredi(csv, read=True):
             csv = ler_csv(csv, delimiter=';')
 
         datas = pd.to_datetime(csv['Data'], dayfirst=True)
-        descricao = csv['Descricao'] + ' ' + csv['CodTransacao'] + ' ' + csv['Identificador'] + ' ' + csv['Tipo']
+        descricao = (
+            csv['Descricao'].fillna('').astype(str) + ' ' +
+            csv['CodTransacao'].fillna('').astype(str) + ' ' +
+            csv['Identificador'].fillna('').astype(str) + ' ' +
+            csv['Tipo'].fillna('').astype(str)
+        ).str.strip()
         valores = csv['Valor'].str.replace(',', '.').str.replace(' R$ ', '').astype(float)
 
         extrato = {
@@ -77,7 +85,11 @@ def bb(csv, read=True):
         csv = csv[~((csv['Data'] == '00/00/0000') | (csv['Lançamento'] == 'Saldo do dia'))]
         
         datas = pd.to_datetime(csv['Data'], dayfirst=True)
-        descricao = csv['Lançamento'] + ' ' + csv['Detalhes'] + ' ' + csv['Nº documento']
+        descricao = (
+            csv['Lançamento'].fillna('').astype(str) + ' ' +
+            csv.get('Detalhes', pd.Series('', index=csv.index)).fillna('').astype(str) + ' ' +
+            csv.get('Nº documento', pd.Series('', index=csv.index)).fillna('').astype(str)
+        ).str.strip()
         valores = csv['Valor'].str.replace(',', '.').astype(float)
 
         extrato = {
