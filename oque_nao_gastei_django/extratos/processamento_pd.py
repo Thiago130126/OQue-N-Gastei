@@ -1,6 +1,19 @@
 import pandas as pd
 import re
 import matplotlib.pyplot as plt
+from .limpeza_strategy import metodos_limpeza
+
+def ClearManager(arquivo, read=True, csv_recebido=True):
+    for funcao in metodos_limpeza:
+        csv_limpo = funcao(arquivo, read)
+        if csv_limpo is not None:
+            dataframe_limpo = pd.DataFrame(csv_limpo)
+            if csv_recebido:
+                dataframe_limpo = Processamento(dataframe_limpo, limpo=True)
+
+            return dataframe_limpo
+        
+    raise ValueError("Não foi possível processar o csv")
 
 class Processamento:
     moments = ['dias_uteis', 'dias', 'semana', 'mes', 'bimestre', 'trimestre', 'semestre', 'ano']
@@ -75,17 +88,7 @@ class Processamento:
 
     def limpar_dados(self):
         try:
-            datas = pd.to_datetime(self.frame['Data Lançamento'], dayfirst=True)
-            descricao = self.frame['Descrição']
-            valores = self.frame['Valor'].str.replace(',', '.').astype(float)
-
-            extrato = {
-                'data': datas,
-                'descricao': descricao,
-                'valor': valores 
-            }
-
-            self.frame = pd.DataFrame(extrato)
+            self.frame = ClearManager(self.frame, read=False, csv_recebido=False)
             self.limpo = True
         except Exception as e:
             print(e)
@@ -103,7 +106,7 @@ class Processamento:
         valores_filtrados = valores.loc[linhas]
 
         return valores_filtrados
-        
+    
         
     def somar(self, moment='mes', filter=None, tipo='saida', pdf=False):
         try:

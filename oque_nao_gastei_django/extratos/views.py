@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from .forms import UploadForm
-from .processamento_pd import Processamento
+from .processamento_pd import Processamento, ClearManager
 import pandas as pd
 from .models import Transacoes
 from django.views.decorators.http import require_POST
@@ -25,32 +25,34 @@ from django.db import transaction
 # e provavelmente vai precisar de uma forma melhor para o código abrangir o modelo de csv de diferentes instituições
 @login_required
 def UploadExtratoView(request):
-    if request.method == 'POST':
-        upload_form = UploadForm(request.POST, request.FILES)
-        if upload_form.is_valid():
-            arquivo = upload_form.cleaned_data['arquivo_csv']
-            df_arquivo = pd.read_csv(arquivo, sep=';', skiprows=4)
-            frame = Processamento(df_arquivo)
-            obj = frame.obter_dataframe()
-            list_obj = [
-                Transacoes(
-                    data=linha.data,
-                    descricao=linha.descricao,
-                    valor=linha.valor,
-                    user=request.user
-                ) for linha in obj.itertuples()
-                ]
-            Transacoes.objects.bulk_create(list_obj)
-            atualizar_cache(request.user)
-            return redirect('/')
-    else:
-        upload_form = UploadForm()
+    try:
+        if request.method == 'POST':
+            upload_form = UploadForm(request.POST, request.FILES)
+            if upload_form.is_valid():
+                arquivo = upload_form.cleaned_data['arquivo_csv']
+                frame = ClearManager(arquivo)
+                obj = frame.obter_dataframe()
+                list_obj = [
+                    Transacoes(
+                        data=linha.data,
+                        descricao=linha.descricao,
+                        valor=linha.valor,
+                        user=request.user
+                    ) for linha in obj.itertuples()
+                    ]
+                Transacoes.objects.bulk_create(list_obj)
+                atualizar_cache(request.user)
+                return redirect('/')
+        else:
+            upload_form = UploadForm()
 
-    return render(
-        request,
-        'upload/upload_csv.html',
-        {'form': upload_form}
-    )
+        return render(
+            request,
+            'upload/upload_csv.html',
+            {'form': upload_form}
+        )
+    except Exception as e:
+        print(e)
 
 @login_required
 @require_POST
