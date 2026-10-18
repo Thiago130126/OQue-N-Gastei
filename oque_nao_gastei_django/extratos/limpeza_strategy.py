@@ -17,16 +17,19 @@ def ler_csv(arquivo, delimiter=',', skiprows=0):
             try:
                 csv = pd.read_csv(arquivo, delimiter=delimiter, skiprows=skiprows, encoding=code)
                 break
-            except UnicodeDecodeError:
+            except UnicodeDecodeError as code_error:
+                print(code_error)
                 if hasattr(arquivo, 'seek'):
                     arquivo.seek(0)
                 pass
-            except Exception:
+            except Exception as e:
+                print(e)
                 if hasattr(arquivo, 'seek'):
                     arquivo.seek(0)
 
         return csv
-    except Exception:
+    except Exception as e:
+        print(e)
         return None
 
     
@@ -39,16 +42,29 @@ def inter(csv, read=True):
 
         datas = pd.to_datetime(csv['Data Lançamento'], dayfirst=True)
         descricao = csv['Descrição']
-        valores = csv['Valor'].str.replace(',', '.').astype(float)
+        valores = (
+                    csv['Valor']
+                    .astype(str)
+                    .str.replace(' ', '', regex=False)
+                    .str.replace('R$', '', regex=False)
+                    .str.replace('.', '', regex=False)
+                    .str.replace(',', '.', regex=False)
+                )
+        valores = pd.to_numeric(valores, errors='coerce')
+
+        valido = datas.notna() & valores.notna()
         
         extrato = {
-            'data': datas,
-            'descricao': descricao,
-            'valor': valores 
+            'data': datas[valido],
+            'descricao': descricao[valido],
+            'valor': valores[valido]
         }
+
+        print('Funcionou', flush=True)
         
         return extrato
-    except Exception:
+    except Exception as e:
+        print(e)
         return None
 
 @add_funcao
@@ -64,16 +80,27 @@ def sicredi(csv, read=True):
             csv['Identificador'].fillna('').astype(str) + ' ' +
             csv['Tipo'].fillna('').astype(str)
         ).str.strip()
-        valores = csv['Valor'].str.replace(',', '.').str.replace(' R$ ', '').astype(float)
+        valores = (
+            csv['Valor']
+            .astype(str)
+            .str.replace(' ', '', regex=False)
+            .str.replace('R$', '', regex=False)
+            .str.replace('.', '', regex=False)
+            .str.replace(',', '.', regex=False)
+        )
+        valores = pd.to_numeric(valores, errors='coerce')
+
+        valido = datas.notna() & valores.notna()
 
         extrato = {
-            'data': datas,
-            'descricao': descricao,
-            'valor': valores
+            'data': datas[valido],
+            'descricao': descricao[valido],
+            'valor': valores[valido]
         }
 
         return extrato
-    except Exception:
+    except Exception as e:
+        print(e)
         return None
 
 @add_funcao
@@ -88,18 +115,29 @@ def bb(csv, read=True):
         descricao = (
             csv['Lançamento'].fillna('').astype(str) + ' ' +
             csv.get('Detalhes', pd.Series('', index=csv.index)).fillna('').astype(str) + ' ' +
-            csv.get('Nº documento', pd.Series('', index=csv.index)).fillna('').astype(str)
+            csv.get('N° documento', pd.Series('', index=csv.index)).fillna('').astype(str)
         ).str.strip()
-        valores = csv['Valor'].str.replace(',', '.').astype(float)
+        valores = (
+            csv['Valor']
+            .astype(str)
+            .str.replace(' ', '', regex=False)
+            .str.replace('R$', '', regex=False)
+            .str.replace('.', '', regex=False)
+            .str.replace(',', '.', regex=False)
+        )
+        valores = pd.to_numeric(valores, errors='coerce')
+
+        valido = datas.notna() & valores.notna()
 
         extrato = {
-            'data': datas,
-            'descricao': descricao,
-            'valor': valores
+            'data': datas[valido],
+            'descricao': descricao[valido],
+            'valor': valores[valido]
         }
 
         return extrato
-    except Exception:
+    except Exception as e:
+        print(e)
         return None
 
 #@add_funcao # Estou sem extrato nubank para poder fazer
