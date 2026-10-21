@@ -1,3 +1,5 @@
 .env*
 *.key
 *.pem
+docker_local.yml.txt
+docker_producao.yml.txt
