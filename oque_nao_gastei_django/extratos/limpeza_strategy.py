@@ -7,7 +7,7 @@ def add_funcao(funcao):
     return funcao
 
 def ler_csv(arquivo, delimiter=',', skiprows=0):
-    codes = ["utf-8", "latin-1"]
+    codes = ["utf-8", "latin-1", "iso-8859-1", "cp1252"]
 
     try:
         if hasattr(arquivo, 'seek'):
@@ -109,7 +109,14 @@ def bb(csv, read=True):
         if read:
             csv = ler_csv(csv)
 
-        csv = csv[~((csv['Data'] == '00/00/0000') | (csv['Lançamento'] == 'Saldo do dia'))]
+        csv = csv[
+            ~(
+                (csv['Data'] == '00/00/0000')
+                | csv['Lançamento']
+                .astype(str)
+                .str.contains(r's\s*a\s*l\s*d\s*o', case=False, regex=True, na=False)
+            )
+        ]
         
         datas = pd.to_datetime(csv['Data'], dayfirst=True)
         descricao = (
